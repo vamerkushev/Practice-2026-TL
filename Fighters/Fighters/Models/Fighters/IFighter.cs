@@ -17,4 +17,6 @@ public interface IFighter
     public void SetWeapon( IWeapon weapon );
 
     public void TakeDamage( int damage );
+
+    public bool IsAlive();
 }

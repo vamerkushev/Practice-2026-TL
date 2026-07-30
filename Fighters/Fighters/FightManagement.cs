@@ -1,16 +1,46 @@
-﻿using Fighters.Extensions;
-using Fighters.Models.Fighters;
+﻿using Fighters.Models.Fighters;
 
 namespace Fighters;
 
 public class FightManagement
 {
-    private readonly List<Fighter> _fighters = new();
+    private const double chanceCriticalHit = 0.2;
+    private const int multiplicatorCriticalHit = 2;
+    private const double minLimitRandom = 0.8;
+    private const double maxSpreadRandom = 0.3;
+
+    private readonly List<Fighter> _fighters = [];
     private readonly Random _random = new();
+
+    public Fighter RunBattle()
+    {
+        List<Fighter> alive = GetAliveFighters();
+
+        if ( alive.Count < 2 )
+        {
+            throw new GameBattleException( "Для запуска раунда нужно минимум 2 бойца!" );
+        }
+
+        int round = 1;
+
+        while ( alive.Count > 1 )
+        {
+            Console.WriteLine( $"Раунд {round}:" );
+            DefineInitiative( alive );
+
+            CalculateResultRound( alive );
+
+            alive = GetAliveFighters();
+            round++;
+        }
+        Fighter winner = alive[ 0 ];
+        Console.WriteLine( $"Боец {winner.Name} победил!" );
+        return winner;
+    }
 
     public bool IsNameOccupied( string name )
     {
-        foreach ( var fighter in _fighters )
+        foreach ( Fighter fighter in _fighters )
         {
             if ( fighter.Name.Equals( name.Trim(), StringComparison.OrdinalIgnoreCase ) )
             {
@@ -35,87 +65,82 @@ public class FightManagement
         _fighters.Clear();
     }
 
-    public Fighter RunBattle()
+    private void CalculateResultRound( List<Fighter> alive )
     {
-        const double chanceCriticalHit = 0.2;
-        const int multiplicatorCriticalHit = 2;
-
-        const double minLimitRandom = 0.8;
-        const double maxSpreadRandom = 0.3;
-
-        List<Fighter> alive = GetAliveFighters();
-
-        if ( alive.Count < 2 )
+        foreach ( Fighter attacker in alive )
         {
-            throw new Exception( "Для запуска раунда нужно минимум 2 бойца!" );
-        }
-
-        int round = 1;
-
-        while ( alive.Count > 1 )
-        {
-            Console.WriteLine( $"Раунд {round}:" );
-            DefineInitiative( alive );
-
-            foreach ( Fighter attacker in alive )
+            if ( !attacker.IsAlive() )
             {
-                if ( !attacker.IsAlive() )
-                {
-                    continue;
-                }
-
-                List<Fighter> defenders = new List<Fighter>();
-
-                foreach ( Fighter f in alive )
-                {
-                    if ( f != attacker && f.IsAlive() )
-                    {
-                        defenders.Add( f );
-                    }
-                }
-
-                if ( defenders.Count == 0 )
-                {
-                    break;
-                }
-
-                Fighter defender = defenders[ _random.Next( defenders.Count ) ];
-
-                int calculateDamage = attacker.CalculateDamage() - defender.CalculateArmor();
-                if ( calculateDamage < 0 )
-                {
-                    calculateDamage = 0;
-                }
-
-                double randomDamageChange = minLimitRandom + _random.NextDouble() * maxSpreadRandom;
-
-                int totalDamage = ( int )( calculateDamage * randomDamageChange );
-
-                if ( _random.NextDouble() <= chanceCriticalHit )
-                {
-                    totalDamage = totalDamage * multiplicatorCriticalHit;
-                    Console.WriteLine( $"Боец {attacker.Name} нанёс КРИТИЧЕСКИЙ УДАР!" );
-                }
-
-                defender.TakeDamage( totalDamage );
-                Console.WriteLine( $"Боец {attacker.Name} нанёс {totalDamage} урона бойцу {defender.Name}. У него осталось {defender.GetCurrentHealth()} HP" );
-
-                if ( !defender.IsAlive() )
-                {
-                    Console.WriteLine( $"Боец {defender.Name} погиб!" );
-                }
+                continue;
             }
-            alive = GetAliveFighters();
-            round++;
+
+            Fighter? defender = SetDefender( attacker, alive );
+            if ( defender == null )
+            {
+                continue;
+            }
+
+            int totalDamage = CalculateTotalDamage( attacker, defender );
+
+            SetDamage( attacker, defender, totalDamage );
         }
-        Fighter winner = alive[ 0 ];
-        Console.WriteLine( $"Боец {winner.Name} победил!" );
-        return winner;
+    }
+
+    private Fighter? SetDefender( Fighter attacker, List<Fighter> alive )
+    {
+        List<Fighter> defenders = [];
+
+        foreach ( Fighter f in alive )
+        {
+            if ( f != attacker && f.IsAlive() )
+            {
+                defenders.Add( f );
+            }
+        }
+
+        return defenders.Count == 0 ? null : defenders[ _random.Next( defenders.Count ) ];
+    }
+
+    private int CalculateTotalDamage( Fighter attacker, Fighter defender )
+    {
+        int calculateDamage = attacker.CalculateDamage() - defender.CalculateArmor();
+        if ( calculateDamage < 0 )
+        {
+            calculateDamage = 0;
+        }
+
+        if ( calculateDamage == 0 )
+        {
+            calculateDamage = 1;
+        }
+
+        double randomDamageChange = minLimitRandom + _random.NextDouble() * maxSpreadRandom;
+
+        int totalDamage = ( int )( calculateDamage * randomDamageChange );
+
+        if ( _random.NextDouble() <= chanceCriticalHit )
+        {
+            totalDamage = totalDamage * multiplicatorCriticalHit;
+            Console.WriteLine( $"Боец {attacker.Name} нанёс КРИТИЧЕСКИЙ УДАР!" );
+        }
+
+        return totalDamage;
+    }
+
+    private void SetDamage( Fighter attacker, Fighter defender, int totalDamage )
+    {
+        defender.TakeDamage( totalDamage );
+        Console.WriteLine( $"Боец {attacker.Name} нанёс {totalDamage} урона бойцу {defender.Name}. У него осталось {defender.GetCurrentHealth()} HP" );
+
+        if ( !defender.IsAlive() )
+        {
+            Console.WriteLine( $"Боец {defender.Name} погиб!" );
+        }
     }
 
     private List<Fighter> GetAliveFighters()
     {
-        List<Fighter> alive = new List<Fighter>();
+        List<Fighter> alive = [];
         foreach ( Fighter f in _fighters )
         {
             if ( f.IsAlive() )

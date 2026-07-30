@@ -1,5 +1,4 @@
-﻿using Fighters.Extensions;
-using Fighters.Models.Armors;
+﻿using Fighters.Models.Armors;
 using Fighters.Models.Fighters;
 using Fighters.Models.Races;
 using Fighters.Models.Roles;
@@ -9,6 +8,8 @@ namespace Fighters;
 
 public class Program
 {
+    private static readonly FightManagement _gameManager = new();
+
     public static void Main()
     {
         PrintMenu();
@@ -47,37 +48,17 @@ public class Program
         }
     }
 
-    private static readonly FightManagement _gameManager = new();
-
-    private static readonly List<IRace> Races = new()
-    {
-        new Human(), new Elf(), new Gnome(), new Goblin(), new Hobbit()
-    };
-
-    private static readonly List<IRole> Roles = new()
-    {
-        new Guardian(), new Healer(), new Knight(), new Ninja(), new Wizard()
-    };
-
-    private static readonly List<IWeapon> Weapons = new()
-    {
-        new Fists(), new Axe(), new Sword(), new Arbalest(), new Gun()
-    };
-
-    private static readonly List<IArmor> Armors = new()
-    {
-        new NoArmor(), new LeatherArmor(), new MetalArmor(), new GoldenArmor(), new DiamondArmor()
-    };
-
     private static void PrintMenu()
     {
-        Console.WriteLine( "Добро пожаловать в игру, Бойцы!" );
-        Console.WriteLine( "Команды для игры:" );
-        Console.WriteLine( "/add - добавить нового бойца" );
-        Console.WriteLine( "/list - показать список всех бойцов" );
-        Console.WriteLine( "/clear - удалить всех бойцов" );
-        Console.WriteLine( "/fight - начать битву" );
-        Console.WriteLine( "/exit - выход из игры" );
+        Console.WriteLine( """
+            Добро пожаловать в игру, Бойцы!
+            Команды для игры:
+            /add - добавить нового бойца
+            /list - показать список всех бойцов
+            /clear - удалить всех бойцов
+            /fight - начать битву
+            /exit - выход из игры
+            """ );
     }
 
     private static void AddFighter()
@@ -97,7 +78,7 @@ public class Program
             name = Console.ReadLine() ?? string.Empty;
         }
 
-        var builder = new Builder( Races, Roles, Weapons, Armors );
+        var builder = new FighterBuilder();
 
         Fighter fighter = builder
             .AddName( name )
@@ -112,7 +93,11 @@ public class Program
             _gameManager.AddFighter( fighter );
             Console.WriteLine( $"Боец {fighter.Name} добавлен!" );
         }
-        catch ( Exception e )
+        catch ( ArgumentException e )
+        {
+            Console.WriteLine( $"Ошибка: {e.Message}" );
+        }
+        catch ( InvalidOperationException e )
         {
             Console.WriteLine( $"Ошибка: {e.Message}" );
         }
@@ -140,7 +125,7 @@ public class Program
         {
             _gameManager.RunBattle();
         }
-        catch ( Exception e )
+        catch ( GameBattleException e )
         {
             Console.WriteLine( $"Ошибка: {e.Message}" );
         }

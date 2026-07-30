@@ -2,8 +2,5 @@
 
 public class Arbalest : IWeapon
 {
-    public int Damage
-    {
-        get => 7;
-    }
+    public int Damage => 7;
 }

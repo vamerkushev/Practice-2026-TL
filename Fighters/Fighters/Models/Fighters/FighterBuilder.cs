@@ -5,32 +5,35 @@ using Fighters.Models.Weapons;
 
 namespace Fighters.Models.Fighters;
 
-public class Builder
+public class FighterBuilder
 {
+    private static readonly List<IRace> _races = new()
+    {
+        new Human(), new Elf(), new Gnome(), new Goblin(), new Hobbit()
+    };
+
+    private static readonly List<IRole> _roles = new()
+    {
+        new Guardian(), new Healer(), new Knight(), new Ninja(), new Wizard()
+    };
+
+    private static readonly List<IWeapon> _weapons = new()
+    {
+        new Fists(), new Axe(), new Sword(), new Arbalest(), new Gun()
+    };
+
+    private static readonly List<IArmor> _armors = new()
+    {
+        new NoArmor(), new LeatherArmor(), new MetalArmor(), new GoldenArmor(), new DiamondArmor()
+    };
+
     private string? _name;
     private IRace? _race;
     private IArmor? _armor;
     private IWeapon? _weapon;
     private IRole? _role;
 
-    private readonly List<IRace> _races;
-    private readonly List<IArmor> _armors;
-    private readonly List<IWeapon> _weapons;
-    private readonly List<IRole> _roles;
-
-    public Builder(
-        List<IRace> races,
-        List<IRole> roles,
-        List<IWeapon> weapons,
-        List<IArmor> armors )
-    {
-        _races = races;
-        _roles = roles;
-        _weapons = weapons;
-        _armors = armors;
-    }
-
-    public Builder AddName( string name )
+    public FighterBuilder AddName( string name )
     {
         if ( string.IsNullOrEmpty( name ) )
         {
@@ -40,26 +43,26 @@ public class Builder
         return this;
     }
 
-    public Builder AddRace()
+    public FighterBuilder AddRace()
     {
-        _race = Select( "Выберите расу: ", _races, race => race.GetType().Name, 0 );
+        _race = Select( "Выберите расу: ", _races, race => race.GetType().Name );
         return this;
     }
 
-    public Builder AddArmor()
+    public FighterBuilder AddArmor()
     {
-        _armor = Select( "Выберите броню: ", _armors, armor => armor.GetType().Name, 0 );
+        _armor = Select( "Выберите броню: ", _armors, armor => armor.GetType().Name );
         return this;
     }
 
-    public Builder AddWeapon()
+    public FighterBuilder AddWeapon()
     {
-        _weapon = Select( "Выберите оружие: ", _weapons, weapon => weapon.GetType().Name, 0 );
+        _weapon = Select( "Выберите оружие: ", _weapons, weapon => weapon.GetType().Name );
         return this;
     }
-    public Builder AddRole()
+    public FighterBuilder AddRole()
     {
-        _role = Select( "Выберите роль: ", _roles, role => role.GetType().Name, 0 );
+        _role = Select( "Выберите роль: ", _roles, role => role.GetType().Name );
         return this;
     }
 
@@ -79,22 +82,21 @@ public class Builder
     private static T Select<T>(
         string title,
         IReadOnlyList<T> items,
-        Func<T, string> nameItem,
-        int defaultValue = -1 )
+        Func<T, string> nameItem )
     {
         while ( true )
         {
             Console.WriteLine( title );
             for ( int i = 0; i < items.Count; i++ )
             {
-                string postfix = ( i == defaultValue ) ? " (по умолчанию)" : "";
+                string postfix = ( i == 0 ) ? " (по умолчанию)" : "";
                 Console.WriteLine( $"{i + 1}. {nameItem( items[ i ] )}{postfix}" );
             }
 
             string input = Console.ReadLine() ?? string.Empty;
-            if ( string.IsNullOrEmpty( input ) && defaultValue >= 0 )
+            if ( string.IsNullOrEmpty( input ) )
             {
-                return items[ defaultValue ];
+                return items[ 0 ];
             }
 
             if ( int.TryParse( input, out int choice ) && choice >= 1 && choice <= items.Count )
