@@ -1,7 +1,6 @@
-﻿namespace Fighters
+﻿namespace Fighters;
+
+internal class GameBattleException : Exception
 {
-    internal class GameBattleException : Exception
-    {
-        public GameBattleException( string exceptionMessage ) : base( exceptionMessage ) { }
-    }
+    public GameBattleException( string exceptionMessage ) : base( exceptionMessage ) { }
 }

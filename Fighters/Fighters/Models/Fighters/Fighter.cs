@@ -59,13 +59,6 @@ public class Fighter : IFighter
 
     public bool IsAlive()
     {
-        if ( _currentHealth > 0 )
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return _currentHealth > 0;
     }
 }

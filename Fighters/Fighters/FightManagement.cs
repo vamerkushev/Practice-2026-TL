@@ -4,10 +4,10 @@ namespace Fighters;
 
 public class FightManagement
 {
-    private const double chanceCriticalHit = 0.2;
-    private const int multiplicatorCriticalHit = 2;
-    private const double minLimitRandom = 0.8;
-    private const double maxSpreadRandom = 0.3;
+    private const double ChanceCriticalHit = 0.2;
+    private const int MultiplicatorCriticalHit = 2;
+    private const double MinLimitRandom = 0.8;
+    private const double MaxSpreadRandom = 0.3;
 
     private readonly List<Fighter> _fighters = [];
     private readonly Random _random = new();
@@ -74,7 +74,7 @@ public class FightManagement
                 continue;
             }
 
-            Fighter? defender = SetDefender( attacker, alive );
+            Fighter? defender = ChooseDefender( attacker, alive );
             if ( defender == null )
             {
                 continue;
@@ -82,11 +82,11 @@ public class FightManagement
 
             int totalDamage = CalculateTotalDamage( attacker, defender );
 
-            SetDamage( attacker, defender, totalDamage );
+            ApplyDamage( attacker, defender, totalDamage );
         }
     }
 
-    private Fighter? SetDefender( Fighter attacker, List<Fighter> alive )
+    private Fighter? ChooseDefender( Fighter attacker, List<Fighter> alive )
     {
         List<Fighter> defenders = [];
 
@@ -103,31 +103,31 @@ public class FightManagement
 
     private int CalculateTotalDamage( Fighter attacker, Fighter defender )
     {
-        int calculateDamage = attacker.CalculateDamage() - defender.CalculateArmor();
-        if ( calculateDamage < 0 )
+        int calculatedDamage = attacker.CalculateDamage() - defender.CalculateArmor();
+        if ( calculatedDamage < 0 )
         {
-            calculateDamage = 0;
+            calculatedDamage = 0;
         }
 
-        if ( calculateDamage == 0 )
+        if ( calculatedDamage == 0 )
         {
-            calculateDamage = 1;
+            calculatedDamage = 1;
         }
 
-        double randomDamageChange = minLimitRandom + _random.NextDouble() * maxSpreadRandom;
+        double randomDamageChange = MinLimitRandom + _random.NextDouble() * MaxSpreadRandom;
 
-        int totalDamage = ( int )( calculateDamage * randomDamageChange );
+        int totalDamage = ( int )( calculatedDamage * randomDamageChange );
 
-        if ( _random.NextDouble() <= chanceCriticalHit )
+        if ( _random.NextDouble() <= ChanceCriticalHit )
         {
-            totalDamage = totalDamage * multiplicatorCriticalHit;
+            totalDamage = totalDamage * MultiplicatorCriticalHit;
             Console.WriteLine( $"Боец {attacker.Name} нанёс КРИТИЧЕСКИЙ УДАР!" );
         }
 
         return totalDamage;
     }
 
-    private void SetDamage( Fighter attacker, Fighter defender, int totalDamage )
+    private void ApplyDamage( Fighter attacker, Fighter defender, int totalDamage )
     {
         defender.TakeDamage( totalDamage );
         Console.WriteLine( $"Боец {attacker.Name} нанёс {totalDamage} урона бойцу {defender.Name}. У него осталось {defender.GetCurrentHealth()} HP" );

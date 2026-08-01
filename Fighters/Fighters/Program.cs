@@ -1,8 +1,4 @@
-﻿using Fighters.Models.Armors;
-using Fighters.Models.Fighters;
-using Fighters.Models.Races;
-using Fighters.Models.Roles;
-using Fighters.Models.Weapons;
+﻿using Fighters.Models.Fighters;
 
 namespace Fighters;
 

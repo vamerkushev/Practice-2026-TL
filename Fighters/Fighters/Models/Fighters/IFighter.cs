@@ -1,7 +1,4 @@
-﻿using Fighters.Models.Armors;
-using Fighters.Models.Weapons;
-
-namespace Fighters.Models.Fighters;
+﻿namespace Fighters.Models.Fighters;
 
 public interface IFighter
 {
