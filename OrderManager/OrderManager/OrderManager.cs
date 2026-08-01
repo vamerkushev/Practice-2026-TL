@@ -1,17 +1,15 @@
-﻿using System.Security.Cryptography.X509Certificates;
-
-public class OrderManager
+﻿public class OrderManager
 {
-    private const int deliveryInDays = 3;
+    private const int DeliveryInDays = 3;
 
     public static OrderData RequestOrderData()
     {
-        var order = new OrderData();
-        order.Product = RequestProductTitle();
-        order.ProductQuantity = RequestProductQuantity();
-        order.Name = RequestClientName();
-        order.Address = RequestClientAddress();
-        return order;
+        string product = RequestProductTitle();
+        int productQuantity = RequestProductQuantity();
+        string name = RequestClientName();
+        string address = RequestClientAddress();
+
+        return new OrderData( product, productQuantity, name, address );
     }
 
     public static bool TryConfirmOrder( OrderData order )
@@ -42,7 +40,7 @@ public class OrderManager
 
     private static void MakeOrder( OrderData order )
     {
-        Console.WriteLine( $"{order.Name}! Ваш заказ {order.Product} в количестве {order.ProductQuantity} оформлен! Ожидайте доставку по адресу {order.Address} к {DateTime.Now.AddDays( deliveryInDays ).ToString( "dd.MM.yyyy" )}!" );
+        Console.WriteLine( $"{order.Name}! Ваш заказ {order.Product} в количестве {order.ProductQuantity} оформлен! Ожидайте доставку по адресу {order.Address} к {DateTime.Now.AddDays( DeliveryInDays ).ToString( "dd.MM.yyyy" )}!" );
     }
 
     private static string CheckEmptyInput()
@@ -58,14 +56,14 @@ public class OrderManager
         }
     }
 
-    private static string CheckValidQuantity()
+    private static int CheckValidQuantity()
     {
         while ( true )
         {
             string input = Console.ReadLine() ?? string.Empty;
             if ( int.TryParse( input, out int q ) && q > 0 )
             {
-                return input;
+                return q;
             }
             Console.WriteLine( "Введите целое положительное число!" );
         }
@@ -78,7 +76,7 @@ public class OrderManager
         return Product;
     }
 
-    private static string RequestProductQuantity()
+    private static int RequestProductQuantity()
     {
         Console.WriteLine( "Введите количество товара:" );
         var ProductQuantity = CheckValidQuantity();

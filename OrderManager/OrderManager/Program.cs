@@ -2,15 +2,11 @@
 {
     public static void Main()
     {
-        while ( true )
+        bool orderConfirmed = false;
+        while ( !orderConfirmed )
         {
             var order = OrderManager.RequestOrderData();
-            bool isConfirmed = OrderManager.TryConfirmOrder( order );
-
-            if ( isConfirmed )
-            {
-                break;
-            }
+            orderConfirmed = OrderManager.TryConfirmOrder( order );
         }
     }
 }
