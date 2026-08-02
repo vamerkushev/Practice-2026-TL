@@ -5,7 +5,7 @@
         bool orderConfirmed = false;
         while ( !orderConfirmed )
         {
-            var order = OrderManager.RequestOrderData();
+            OrderData order = OrderManager.RequestOrderData();
             orderConfirmed = OrderManager.TryConfirmOrder( order );
         }
     }
