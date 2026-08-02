@@ -35,7 +35,7 @@ public class Program
                     DeleteFighters();
                     break;
                 case "/exit":
-                    Console.WriteLine( "Игра окорнчена!" );
+                    Console.WriteLine( "Игра окончена!" );
                     return;
                 default:
                     Console.WriteLine( "Неизвестная команда!" );

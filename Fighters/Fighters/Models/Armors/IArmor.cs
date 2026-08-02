@@ -1,4 +1,6 @@
-﻿public interface IArmor
+﻿namespace Fighters.Models.Armors;
+
+public interface IArmor
 {
     public int Armor { get; }
 }

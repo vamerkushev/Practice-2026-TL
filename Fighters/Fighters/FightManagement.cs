@@ -103,16 +103,7 @@ public class FightManagement
 
     private int CalculateTotalDamage( Fighter attacker, Fighter defender )
     {
-        int calculatedDamage = attacker.CalculateDamage() - defender.CalculateArmor();
-        if ( calculatedDamage < 0 )
-        {
-            calculatedDamage = 0;
-        }
-
-        if ( calculatedDamage == 0 )
-        {
-            calculatedDamage = 1;
-        }
+        int calculatedDamage = attacker.CalculateBaseDamage( defender );
 
         double randomDamageChange = MinLimitRandom + _random.NextDouble() * MaxSpreadRandom;
 
@@ -122,6 +113,11 @@ public class FightManagement
         {
             totalDamage = totalDamage * MultiplicatorCriticalHit;
             Console.WriteLine( $"Боец {attacker.Name} нанёс КРИТИЧЕСКИЙ УДАР!" );
+        }
+
+        if ( totalDamage == 0 )
+        {
+            totalDamage = 1;
         }
 
         return totalDamage;

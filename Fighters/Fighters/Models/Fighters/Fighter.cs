@@ -9,8 +9,8 @@ public class Fighter : IFighter
 {
     private readonly IRace _race;
     private readonly IRole _role;
-    private IArmor _armor = new NoArmor();
-    private IWeapon _weapon = new Fists();
+    private readonly IArmor _armor;
+    private readonly IWeapon _weapon;
 
     private int _currentHealth;
 
@@ -36,16 +36,6 @@ public class Fighter : IFighter
 
     public int CalculateArmor() => _armor.Armor + _race.Armor;
 
-    public void SetArmor( IArmor armor )
-    {
-        _armor = armor;
-    }
-
-    public void SetWeapon( IWeapon weapon )
-    {
-        _weapon = weapon;
-    }
-
     public void TakeDamage( int damage )
     {
         int newHealth = _currentHealth - damage;
@@ -55,6 +45,12 @@ public class Fighter : IFighter
         }
 
         _currentHealth = newHealth;
+    }
+
+    public int CalculateBaseDamage( IFighter defender )
+    {
+        int damage = CalculateDamage() - defender.CalculateArmor();
+        return damage < 0 ? 0 : damage;
     }
 
     public bool IsAlive()
