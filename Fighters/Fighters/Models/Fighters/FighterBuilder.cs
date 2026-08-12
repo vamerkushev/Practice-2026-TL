@@ -37,7 +37,7 @@ public class FighterBuilder
     {
         if ( string.IsNullOrEmpty( name ) )
         {
-            throw new ArgumentException( "Имя не может быть пустым!" );
+            throw new GameBattleException( "Имя не может быть пустым!" );
         }
         _name = name;
         return this;
@@ -70,11 +70,11 @@ public class FighterBuilder
     {
         if ( string.IsNullOrEmpty( _name ) )
         {
-            throw new Exception( "Имя не задано." );
+            throw new GameBattleException( "Имя не задано." );
         }
         if ( _race == null || _role == null || _weapon == null || _armor == null )
         {
-            throw new Exception( "Не все компоненты выбраны." );
+            throw new GameBattleException( "Не все компоненты выбраны." );
         }
         return new Fighter( _name, _race, _armor, _weapon, _role );
     }

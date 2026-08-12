@@ -74,34 +74,34 @@ public class Program
             name = Console.ReadLine() ?? string.Empty;
         }
 
-        var builder = new FighterBuilder();
-
-        Fighter fighter = builder
-            .AddName( name )
-            .AddRace()
-            .AddRole()
-            .AddWeapon()
-            .AddArmor()
-            .Build();
+        FighterBuilder builder = new FighterBuilder();
 
         try
         {
+            Fighter fighter = builder
+                .AddName( name )
+                .AddRace()
+                .AddRole()
+                .AddWeapon()
+                .AddArmor()
+                .Build();
+
             _gameManager.AddFighter( fighter );
             Console.WriteLine( $"Боец {fighter.Name} добавлен!" );
         }
-        catch ( ArgumentException e )
+        catch ( GameBattleException e )
         {
             Console.WriteLine( $"Ошибка: {e.Message}" );
         }
-        catch ( InvalidOperationException e )
+        catch ( Exception e )
         {
-            Console.WriteLine( $"Ошибка: {e.Message}" );
+            Console.WriteLine( $"Неизвестная ошибка: {e.Message}" );
         }
     }
 
     private static void ShowListFighters()
     {
-        var fighters = _gameManager.GetFighters();
+        List<Fighter> fighters = _gameManager.GetFighters();
         if ( fighters.Count == 0 )
         {
             Console.WriteLine( "Список бойцов пуст!" );
@@ -109,7 +109,7 @@ public class Program
         }
 
         Console.WriteLine( "Список бойцов:" );
-        foreach ( var f in fighters )
+        foreach ( Fighter f in fighters )
         {
             Console.WriteLine( $"Боец {f.Name}, HP: {f.GetCurrentHealth()} из {f.GetMaxHealth()}, Сила: {f.CalculateDamage()}, Броня: {f.CalculateArmor()}, {( f.IsAlive() ? "Жив" : "Мёртв" )}" );
         }
@@ -125,11 +125,15 @@ public class Program
         {
             Console.WriteLine( $"Ошибка: {e.Message}" );
         }
+        catch ( Exception e )
+        {
+            Console.WriteLine( $"Неизвестная ошибка: {e.Message}" );
+        }
     }
 
     private static void DeleteFighters()
     {
-        var fighters = _gameManager.GetFighters();
+        List<Fighter> fighters = _gameManager.GetFighters();
 
         if ( fighters.Count == 0 )
         {
