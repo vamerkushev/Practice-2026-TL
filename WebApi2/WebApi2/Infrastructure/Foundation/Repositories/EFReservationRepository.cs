@@ -1,4 +1,6 @@
 ﻿using Domain.Entities;
+using Domain.Exceptions;
+using Domain.Interfaces.Models;
 using Domain.Interfaces.Repositories;
 
 namespace Infrastructure.Foundation.Repositories;
@@ -12,12 +14,12 @@ public class EFReservationRepository : IReservationRepository
         _dbContext = dbContext;
     }
 
-    public IReadOnlyList<Reservation> GetAllReservations()
+    public IReadOnlyList<Reservation> GetReservations()
     {
         return _dbContext.Set<Reservation>().ToList();
     }
 
-    public Reservation? GetReservationById( Guid id )
+    public Reservation? GetReservationForId( Guid id )
     {
         return _dbContext.Set<Reservation>().Find( id );
     }
@@ -36,17 +38,17 @@ public class EFReservationRepository : IReservationRepository
 
     public void Delete( Guid id )
     {
-        Reservation? existingReservation = GetReservationById( id );
+        Reservation? existingReservation = GetReservationForId( id );
         if ( existingReservation == null )
         {
-            throw new KeyNotFoundException( $"Reservation с {id} ID не найден!" );
+            throw new NotFoundException( $"Reservation с {id} ID не найден!" );
         }
 
         _dbContext.Set<Reservation>().Remove( existingReservation );
         _dbContext.SaveChanges();
     }
 
-    public int GetOverlappingReservationsCount( Guid roomTypeId, DateTime arrival, DateTime departure )
+    public int GetOverlappingReservationsCount( Guid roomTypeId, DateOnly arrival, DateOnly departure )
     {
         return _dbContext.Set<Reservation>().Count( r =>
             r.RoomTypeId == roomTypeId && !r.IsCancelled &&
@@ -54,7 +56,7 @@ public class EFReservationRepository : IReservationRepository
             r.DepartureDate > arrival );
     }
 
-    public IReadOnlyList<Reservation> GetFilteredReservations( Guid? propertyId, DateTime? fromDate, DateTime? toDate, string? guestName )
+    public IReadOnlyList<Reservation> GetFilteredReservations( Guid? propertyId, DateOnly? fromDate, DateOnly? toDate, string? guestName )
     {
         IQueryable<Reservation> query = _dbContext.Set<Reservation>().AsQueryable();
 
@@ -77,6 +79,47 @@ public class EFReservationRepository : IReservationRepository
         {
             query = query.Where( r => r.GuestName.Contains( guestName ) );
         }
+
+        return query.ToList();
+    }
+
+    public bool HasReservations( Guid roomTypeId )
+    {
+        return _dbContext.Set<Reservation>().Any( r => r.RoomTypeId == roomTypeId && !r.IsCancelled );
+    }
+
+    public IReadOnlyList<RoomTypeSearch> SearchAvailableOptions( string? city, DateOnly arrivalDate, DateOnly departureDate, int guests, decimal? maxPrice )
+    {
+        int nights = departureDate.DayNumber - arrivalDate.DayNumber;
+
+        IQueryable<RoomTypeSearch> query = _dbContext.Set<Property>()
+            .SelectMany( p => p.RoomTypes, ( p, rt ) => new { p, rt } )
+            .Where( w => ( string.IsNullOrEmpty( city ) || w.p.City.Contains( city ) )
+                && ( guests >= w.rt.MinPersonCount && guests <= w.rt.MaxPersonCount )
+                && ( !maxPrice.HasValue || w.rt.DailyPrice <= maxPrice.Value ) )
+            .Select( s => new
+            {
+                s.p,
+                s.rt,
+                overlaps = _dbContext.Set<Reservation>()
+                    .Count( r => r.RoomTypeId == s.rt.Id
+                    && !r.IsCancelled
+                    && r.ArrivalDate < departureDate
+                    && r.DepartureDate > arrivalDate )
+            } )
+            .Where( w => w.rt.AvailableRoomsCount - w.overlaps > 0 )
+            .Select( s => new RoomTypeSearch
+            {
+                PropertyId = s.p.Id,
+                PropertyName = s.p.Name,
+                City = s.p.City,
+                RoomTypeId = s.rt.Id,
+                RoomTypeName = s.rt.Name,
+                DailyPrice = s.rt.DailyPrice,
+                Currency = s.rt.Currency,
+                TotalForStay = s.rt.DailyPrice * nights,
+                AvailableRooms = s.rt.AvailableRoomsCount - s.overlaps
+            } );
 
         return query.ToList();
     }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(HotelManagementDbContext))]
-    [Migration("20260811223153_InitialCreate")]
+    [Migration("20260819004957_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -68,26 +68,24 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ArrivalDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("ArrivalDate")
+                        .HasColumnType("date");
 
-                    b.Property<string>("ArrivalTime")
-                        .IsRequired()
+                    b.Property<TimeOnly>("ArrivalTime")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("time");
 
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
 
-                    b.Property<DateTime>("DepartureDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("DepartureDate")
+                        .HasColumnType("date");
 
-                    b.Property<string>("DepartureTime")
-                        .IsRequired()
+                    b.Property<TimeOnly>("DepartureTime")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("time");
 
                     b.Property<int>("GuestCount")
                         .HasColumnType("int");

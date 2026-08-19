@@ -1,6 +1,6 @@
-﻿namespace WebApi.DTOs;
+﻿namespace Application;
 
-public class SearchResultItemDto
+public class AvailableRoomType
 {
     public Guid PropertyId { get; set; }
     public string PropertyName { get; set; } = string.Empty;

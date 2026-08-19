@@ -36,9 +36,4 @@ public class Property
         Latitude = latitude;
         Longitude = longitude;
     }
-
-    public void CopyFrom( Property other )
-    {
-        Update( other.Name, other.Country, other.City, other.Address, other.Latitude, other.Longitude );
-    }
 }

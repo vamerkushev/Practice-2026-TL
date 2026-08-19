@@ -1,6 +1,6 @@
-﻿namespace Domain.Entities;
+﻿namespace Domain.Interfaces.Models;
 
-public class AvailableRoomType
+public class RoomTypeSearch
 {
     public Guid PropertyId { get; set; }
     public string PropertyName { get; set; } = string.Empty;

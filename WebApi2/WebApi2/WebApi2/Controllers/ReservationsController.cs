@@ -1,17 +1,18 @@
 ﻿using Domain.Entities;
-using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.DTOs;
+using Application.DTOs;
+using Application.Services;
+using Application;
 
-namespace WebApi.Controllers;
+namespace WebApi2.Controllers;
 
 [ApiController]
 [Route( "api" )]
 public class ReservationsController : ControllerBase
 {
-    private readonly IReservationService _reservationService;
+    private readonly ReservationService _reservationService;
 
-    public ReservationsController( IReservationService reservationService )
+    public ReservationsController( ReservationService reservationService )
     {
         _reservationService = reservationService;
     }
@@ -26,18 +27,7 @@ public class ReservationsController : ControllerBase
             request.Guests,
             request.MaxPrice );
 
-        IEnumerable<SearchResultItemDto> result = domainResults.Select( r => new SearchResultItemDto
-        {
-            PropertyId = r.PropertyId,
-            PropertyName = r.PropertyName,
-            City = r.City,
-            RoomTypeId = r.RoomTypeId,
-            RoomTypeName = r.RoomTypeName,
-            DailyPrice = r.DailyPrice,
-            Currency = r.Currency,
-            TotalForStay = r.TotalForStay,
-            AvailableRooms = r.AvailableRooms
-        } );
+        IEnumerable<SearchResultItemDto> result = domainResults.Select( SearchResultItemDto.MapFromAvailableRoomTypes );
 
         return Ok( result );
     }
@@ -45,61 +35,20 @@ public class ReservationsController : ControllerBase
     [HttpPost( "reservations" )]
     public IActionResult CreateReservation( [FromBody] CreateReservationDto request )
     {
-        Reservation reservation = new(
-            request.PropertyId,
-            request.RoomTypeId,
-            request.ArrivalDate,
-            request.DepartureDate,
-            request.ArrivalTime,
-            request.DepartureTime,
-            request.GuestName,
-            request.GuestPhoneNumber,
-            request.GuestCount,
-            0,
-            string.Empty
-        );
-
-        try
-        {
-            _reservationService.CreateReservation( reservation );
-        }
-        catch ( ArgumentException e )
-        {
-            return BadRequest( e.Message );
-        }
-        catch ( InvalidOperationException e )
-        {
-            return BadRequest( e.Message );
-        }
-
-        return Ok();
+        Guid reservationId = _reservationService.CreateReservation( request );
+        return CreatedAtAction( nameof( GetReservation ), new { id = reservationId }, reservationId );
     }
 
     [HttpGet( "reservations" )]
     public IActionResult GetReservations(
         [FromQuery] Guid? propertyId,
-        [FromQuery] DateTime? fromDate,
-        [FromQuery] DateTime? toDate,
+        [FromQuery] DateOnly? fromDate,
+        [FromQuery] DateOnly? toDate,
         [FromQuery] string? guestName )
     {
-        IReadOnlyList<Reservation> reservations = _reservationService.GetAllReservations( propertyId, fromDate, toDate, guestName );
+        IReadOnlyList<Reservation> reservations = _reservationService.GetReservations( propertyId, fromDate, toDate, guestName );
 
-        IReadOnlyList<ReservationDto> result = reservations.Select( r => new ReservationDto
-        {
-            Id = r.Id,
-            PropertyId = r.PropertyId,
-            RoomTypeId = r.RoomTypeId,
-            ArrivalDate = r.ArrivalDate,
-            DepartureDate = r.DepartureDate,
-            ArrivalTime = r.ArrivalTime,
-            DepartureTime = r.DepartureTime,
-            GuestName = r.GuestName,
-            GuestPhoneNumber = r.GuestPhoneNumber,
-            GuestCount = r.GuestCount,
-            Total = r.Total,
-            Currency = r.Currency,
-            IsCancelled = r.IsCancelled
-        } ).ToList();
+        IReadOnlyList<ReservationDto> result = reservations.Select( ReservationDto.MapFromReservation ).ToList();
 
         return Ok( result );
     }
@@ -107,7 +56,7 @@ public class ReservationsController : ControllerBase
     [HttpGet( "reservations/{id:guid}" )]
     public IActionResult GetReservation( [FromRoute] Guid id )
     {
-        Reservation? reservation = _reservationService.GetReservationById( id );
+        Reservation? reservation = _reservationService.GetReservationForId( id );
         if ( reservation == null )
         {
             return NotFound();
@@ -136,19 +85,7 @@ public class ReservationsController : ControllerBase
     [HttpDelete( "reservations/{id:guid}" )]
     public IActionResult CancelReservation( [FromRoute] Guid id )
     {
-        try
-        {
-            _reservationService.CancelReservation( id );
-        }
-        catch ( KeyNotFoundException )
-        {
-            return NotFound();
-        }
-        catch ( InvalidOperationException e )
-        {
-            return BadRequest( e.Message );
-        }
-
-        return Ok();
+        _reservationService.CancelReservation( id );
+        return NotFound();
     }
 }

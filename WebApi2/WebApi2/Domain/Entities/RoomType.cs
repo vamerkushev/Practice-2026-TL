@@ -61,9 +61,4 @@ public class RoomType
         Services = services ?? Services;
         Amenities = amenities ?? Amenities;
     }
-
-    public void CopyFrom( RoomType other )
-    {
-        Update( other.Name, other.DailyPrice, other.Currency, other.MinPersonCount, other.MaxPersonCount, other.AvailableRoomsCount, other.Services, other.Amenities );
-    }
 }

@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces.Repositories;
+using Domain.Exceptions;
 
 namespace Infrastructure.Foundation.Repositories;
 
@@ -17,7 +18,7 @@ public class EFRoomTypeRepository : IRoomTypeRepository
         return _dbContext.Set<RoomType>().Where( r => r.PropertyId == propertyId ).ToList();
     }
 
-    public RoomType? GetRoomTypeById( Guid id )
+    public RoomType? GetRoomTypeForId( Guid id )
     {
         return _dbContext.Set<RoomType>().Find( id );
     }
@@ -30,30 +31,19 @@ public class EFRoomTypeRepository : IRoomTypeRepository
 
     public void Update( RoomType roomType )
     {
-        RoomType? existingRoomType = GetRoomTypeById( roomType.Id );
-        if ( existingRoomType == null )
-        {
-            throw new KeyNotFoundException( $"RoomType с {roomType.Id} ID не найден!" );
-        }
-
-        existingRoomType.CopyFrom( roomType );
+        _dbContext.Update( roomType );
         _dbContext.SaveChanges();
     }
 
     public void Delete( Guid id )
     {
-        RoomType? existingRoomType = GetRoomTypeById( id );
+        RoomType? existingRoomType = GetRoomTypeForId( id );
         if ( existingRoomType == null )
         {
-            throw new KeyNotFoundException( $"RoomType с {id} ID не найден!" );
+            throw new NotFoundException( $"RoomType с {id} ID не найден!" );
         }
 
         _dbContext.Set<RoomType>().Remove( existingRoomType );
         _dbContext.SaveChanges();
-    }
-
-    public bool HasReservations( Guid roomTypeId )
-    {
-        return _dbContext.Set<Reservation>().Any( r => r.RoomTypeId == roomTypeId );
     }
 }

@@ -5,10 +5,10 @@ public class Reservation
     public Guid Id { get; private init; }
     public Guid PropertyId { get; private set; }
     public Guid RoomTypeId { get; private set; }
-    public DateTime ArrivalDate { get; private set; }
-    public DateTime DepartureDate { get; private set; }
-    public string ArrivalTime { get; private set; }
-    public string DepartureTime { get; private set; }
+    public DateOnly ArrivalDate { get; private set; }
+    public DateOnly DepartureDate { get; private set; }
+    public TimeOnly ArrivalTime { get; private set; }
+    public TimeOnly DepartureTime { get; private set; }
     public string GuestName { get; private set; }
     public string GuestPhoneNumber { get; private set; }
     public int GuestCount { get; private set; }
@@ -26,10 +26,10 @@ public class Reservation
     public Reservation(
         Guid propertyId,
         Guid roomTypeId,
-        DateTime arrivalDate,
-        DateTime departureDate,
-        string arrivalTime,
-        string departureTime,
+        DateOnly arrivalDate,
+        DateOnly departureDate,
+        TimeOnly arrivalTime,
+        TimeOnly departureTime,
         string guestName,
         string guestPhoneNumber,
         int guestCount,
@@ -55,11 +55,5 @@ public class Reservation
     public void Cancel()
     {
         IsCancelled = true;
-    }
-
-    public void SetTotalPrice( decimal total, string currency )
-    {
-        Total = total;
-        Currency = currency;
     }
 }
