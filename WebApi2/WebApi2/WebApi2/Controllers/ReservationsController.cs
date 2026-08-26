@@ -62,22 +62,7 @@ public class ReservationsController : ControllerBase
             return NotFound();
         }
 
-        ReservationDto result = new ReservationDto
-        {
-            Id = reservation.Id,
-            PropertyId = reservation.PropertyId,
-            RoomTypeId = reservation.RoomTypeId,
-            ArrivalDate = reservation.ArrivalDate,
-            DepartureDate = reservation.DepartureDate,
-            ArrivalTime = reservation.ArrivalTime,
-            DepartureTime = reservation.DepartureTime,
-            GuestName = reservation.GuestName,
-            GuestPhoneNumber = reservation.GuestPhoneNumber,
-            GuestCount = reservation.GuestCount,
-            Total = reservation.Total,
-            Currency = reservation.Currency,
-            IsCancelled = reservation.IsCancelled
-        };
+        ReservationDto result = ReservationDto.MapFromReservation( reservation );
 
         return Ok( result );
     }
@@ -86,6 +71,6 @@ public class ReservationsController : ControllerBase
     public IActionResult CancelReservation( [FromRoute] Guid id )
     {
         _reservationService.CancelReservation( id );
-        return NotFound();
+        return NoContent();
     }
 }

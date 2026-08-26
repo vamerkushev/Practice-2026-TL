@@ -41,19 +41,7 @@ public class RoomTypesController : ControllerBase
             return NotFound();
         }
 
-        RoomTypeDto result = new RoomTypeDto()
-        {
-            Id = roomType.Id,
-            PropertyId = roomType.PropertyId,
-            Name = roomType.Name,
-            DailyPrice = roomType.DailyPrice,
-            Currency = roomType.Currency,
-            MinPersonCount = roomType.MinPersonCount,
-            MaxPersonCount = roomType.MaxPersonCount,
-            AvailableRoomsCount = roomType.AvailableRoomsCount,
-            Services = roomType.Services,
-            Amenities = roomType.Amenities
-        };
+        RoomTypeDto result = RoomTypeDto.MapFromRoomType( roomType );
 
         return Ok( result );
     }

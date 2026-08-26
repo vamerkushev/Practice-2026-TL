@@ -5,19 +5,19 @@ namespace Application.DTOs;
 public class UpdatePropertyDto
 {
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string Country { get; set; } = string.Empty;
 
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string City { get; set; } = string.Empty;
 
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string Address { get; set; } = string.Empty;
 
     [Range( -90, 90, ErrorMessage = "Широта должна быть от -90 до 90 градусов!" )]

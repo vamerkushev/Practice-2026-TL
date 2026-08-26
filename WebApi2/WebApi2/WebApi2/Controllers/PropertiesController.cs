@@ -35,16 +35,7 @@ public class PropertiesController : ControllerBase
             return NotFound();
         }
 
-        PropertyDto result = new PropertyDto()
-        {
-            Id = property.Id,
-            Name = property.Name,
-            Country = property.Country,
-            City = property.City,
-            Address = property.Address,
-            Latitude = property.Latitude,
-            Longitude = property.Longitude
-        };
+        PropertyDto result = PropertyDto.MapFromProperty( property );
 
         return Ok( result );
     }

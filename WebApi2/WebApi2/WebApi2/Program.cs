@@ -10,8 +10,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder( args );
 builder.Services.AddDbContext<HotelManagementDbContext>( options =>
     options.UseSqlServer( builder.Configuration.GetConnectionString( "HotelManagement" ) ) );
 
-builder.Services.AddExceptionHandler<BadRequestExceptionHandler>();
-builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 

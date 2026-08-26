@@ -4,8 +4,7 @@ namespace Application.DTOs;
 
 public class SearchAvailabilityDto
 {
-    [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string? City { get; set; }
 
     [Required]
@@ -18,6 +17,6 @@ public class SearchAvailabilityDto
     [Range( 1, ValidationConstants.MaxGuests, ErrorMessage = "Неверное количество гостей!" )]
     public int Guests { get; set; }
 
-    [Range( 0, ValidationConstants.MaxPrice, ErrorMessage = "Максимальная стоимость должна быть положительной!" )]
+    [Range( 1, ValidationConstants.MaxPrice, ErrorMessage = "Максимальная стоимость должна быть положительной!" )]
     public decimal? MaxPrice { get; set; }
 }

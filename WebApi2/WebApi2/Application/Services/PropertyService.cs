@@ -42,6 +42,7 @@ public class PropertyService
         }
 
         property.Update( propertyDto.Name, propertyDto.Country, propertyDto.City, propertyDto.Address, propertyDto.Latitude, propertyDto.Longitude );
+        _propertyRepository.Update( property );
     }
 
     public void DeleteProperty( Guid id )

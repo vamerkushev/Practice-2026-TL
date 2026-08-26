@@ -5,15 +5,15 @@ namespace Application.DTOs;
 public class UpdateRoomTypeDto
 {
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    [Range( 0, ValidationConstants.MaxPrice, ErrorMessage = "Cтоимость должна быть положительной!" )]
+    [Range( 1, ValidationConstants.MaxPrice, ErrorMessage = "Cтоимость должна быть положительной!" )]
     public decimal DailyPrice { get; set; }
 
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.CurrencyTitleLength, MinimumLength = ValidationConstants.CurrencyTitleLength, ErrorMessage = "Введите короткое название валюты, состоящее из 3 букв!" )]
     public string Currency { get; set; } = "RUB";
 
     [Required]

@@ -30,9 +30,9 @@ public class RoomTypeService
 
     public Guid CreateRoomType( Guid propertyId, CreateRoomTypeDto roomTypeDto )
     {
-        if ( roomTypeDto.MinPersonCount >= roomTypeDto.MaxPersonCount )
+        if ( roomTypeDto.MinPersonCount > roomTypeDto.MaxPersonCount )
         {
-            throw new BadRequestException( "Минимальное количество гостей должно быть меньше максимального!" );
+            throw new BadRequestException( "Минимальное количество гостей не должно быть больше максимального!" );
         }
 
         if ( _propertyRepository.GetPropertyForId( propertyId ) == null )
@@ -59,9 +59,9 @@ public class RoomTypeService
 
     public void UpdateRoomType( Guid id, UpdateRoomTypeDto roomTypeDto )
     {
-        if ( roomTypeDto.MinPersonCount >= roomTypeDto.MaxPersonCount )
+        if ( roomTypeDto.MinPersonCount > roomTypeDto.MaxPersonCount )
         {
-            throw new BadRequestException( "Минимальное количество гостей должно быть меньше максимального!" );
+            throw new BadRequestException( "Минимальное количество гостей не должно быть больше максимального!" );
         }
 
         RoomType? roomType = _roomTypeRepository.GetRoomTypeForId( id );
@@ -80,6 +80,8 @@ public class RoomTypeService
             roomTypeDto.Services,
             roomTypeDto.Amenities
         );
+
+        _roomTypeRepository.Update( roomType );
     }
 
     public void DeleteRoomType( Guid id )

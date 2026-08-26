@@ -23,11 +23,11 @@ public class CreateReservationDto
     public TimeOnly DepartureTime { get; set; } = new TimeOnly( 12, 0 );
 
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string GuestName { get; set; } = string.Empty;
 
     [Required]
-    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Строка не должна быть пустой!" )]
+    [StringLength( ValidationConstants.MaxStringLength, ErrorMessage = "Поле не должно быть длиннее {1} символов!" )]
     public string GuestPhoneNumber { get; set; } = string.Empty;
 
     [Required]
