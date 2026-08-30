@@ -4,9 +4,9 @@ public class RoomType
 {
     public Guid Id { get; private set; }
     public Guid PropertyId { get; private set; }
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
     public decimal DailyPrice { get; private set; }
-    public string Currency { get; private set; }
+    public string Currency { get; private set; } = string.Empty;
     public int MinPersonCount { get; private set; }
     public int MaxPersonCount { get; private set; }
     public int AvailableRoomsCount { get; private set; }

@@ -3,10 +3,10 @@
 public class Property
 {
     public Guid Id { get; private init; }
-    public string Name { get; private set; }
-    public string Country { get; private set; }
-    public string City { get; private set; }
-    public string Address { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public string Country { get; private set; } = string.Empty;
+    public string City { get; private set; } = string.Empty;
+    public string Address { get; private set; } = string.Empty;
     public double Latitude { get; private set; }
     public double Longitude { get; private set; }
 

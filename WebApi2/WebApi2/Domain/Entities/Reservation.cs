@@ -9,11 +9,11 @@ public class Reservation
     public DateOnly DepartureDate { get; private set; }
     public TimeOnly ArrivalTime { get; private set; }
     public TimeOnly DepartureTime { get; private set; }
-    public string GuestName { get; private set; }
-    public string GuestPhoneNumber { get; private set; }
+    public string GuestName { get; private set; } = string.Empty;
+    public string GuestPhoneNumber { get; private set; } = string.Empty;
     public int GuestCount { get; private set; }
     public decimal Total { get; private set; }
-    public string Currency { get; private set; }
+    public string Currency { get; private set; } = string.Empty;
     public bool IsCancelled { get; private set; }
 
     public RoomType? RoomType { get; private set; }
