@@ -18,7 +18,7 @@ public class EFRoomTypeRepository : IRoomTypeRepository
         return _dbContext.Set<RoomType>().Where( r => r.PropertyId == propertyId ).ToList();
     }
 
-    public RoomType? GetRoomTypeForId( Guid id )
+    public RoomType? GetById( Guid id )
     {
         return _dbContext.Set<RoomType>().Find( id );
     }
@@ -37,7 +37,7 @@ public class EFRoomTypeRepository : IRoomTypeRepository
 
     public void Delete( Guid id )
     {
-        RoomType? existingRoomType = GetRoomTypeForId( id );
+        RoomType? existingRoomType = GetById( id );
         if ( existingRoomType == null )
         {
             throw new NotFoundException( $"RoomType с {id} ID не найден!" );

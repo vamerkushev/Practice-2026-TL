@@ -27,9 +27,9 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet( "{id:guid}" )]
-    public IActionResult GetProperty( [FromRoute] Guid id )
+    public IActionResult GetProperties( [FromRoute] Guid id )
     {
-        Property? property = _propertyService.GetPropertyForId( id );
+        Property? property = _propertyService.GetById( id );
         if ( property == null )
         {
             return NotFound();
@@ -44,7 +44,7 @@ public class PropertiesController : ControllerBase
     public IActionResult CreateProperty( [FromBody] CreatePropertyDto request )
     {
         Guid propertyId = _propertyService.CreateProperty( request );
-        return CreatedAtAction( nameof( GetProperty ), new { id = propertyId }, propertyId );
+        return CreatedAtAction( nameof( GetProperties ), new { id = propertyId }, propertyId );
     }
 
     [HttpPut( "{id:guid}" )]

@@ -11,4 +11,9 @@ public class RoomTypeSearch
     public string Currency { get; set; } = string.Empty;
     public decimal TotalForStay { get; set; }
     public int AvailableRooms { get; set; }
+
+    public void CalculateTotalForStay( int night )
+    {
+        TotalForStay = DailyPrice * night;
+    }
 }

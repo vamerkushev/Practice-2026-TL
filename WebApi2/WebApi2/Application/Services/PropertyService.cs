@@ -18,12 +18,12 @@ public class PropertyService
 
     public IReadOnlyList<Property> GetProperties()
     {
-        return _propertyRepository.GetProperty();
+        return _propertyRepository.GetProperties();
     }
 
-    public Property? GetPropertyForId( Guid id )
+    public Property? GetById( Guid id )
     {
-        return _propertyRepository.GetPropertyForId( id );
+        return _propertyRepository.GetById( id );
     }
 
     public Guid CreateProperty( CreatePropertyDto propertyDto )
@@ -35,7 +35,7 @@ public class PropertyService
 
     public void UpdateProperty( Guid id, UpdatePropertyDto propertyDto )
     {
-        Property? property = _propertyRepository.GetPropertyForId( id );
+        Property? property = _propertyRepository.GetById( id );
         if ( property == null )
         {
             throw new NotFoundException( $"Property c {id} ID не найден!" );
@@ -47,7 +47,7 @@ public class PropertyService
 
     public void DeleteProperty( Guid id )
     {
-        Property? property = _propertyRepository.GetPropertyForId( id );
+        Property? property = _propertyRepository.GetById( id );
         if ( property == null )
         {
             throw new NotFoundException( $"Property с {id} ID не найден!" );

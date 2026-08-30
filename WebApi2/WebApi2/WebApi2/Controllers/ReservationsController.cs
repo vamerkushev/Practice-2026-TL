@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.Services;
-using Application;
 
 namespace WebApi2.Controllers;
 
@@ -56,7 +55,7 @@ public class ReservationsController : ControllerBase
     [HttpGet( "reservations/{id:guid}" )]
     public IActionResult GetReservation( [FromRoute] Guid id )
     {
-        Reservation? reservation = _reservationService.GetReservationForId( id );
+        Reservation? reservation = _reservationService.GetById( id );
         if ( reservation == null )
         {
             return NotFound();

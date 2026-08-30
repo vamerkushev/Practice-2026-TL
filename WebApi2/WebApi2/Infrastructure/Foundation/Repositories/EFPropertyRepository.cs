@@ -13,12 +13,12 @@ public class EFPropertyRepository : IPropertyRepository
         _dbContext = dbContext;
     }
 
-    public IReadOnlyList<Property> GetProperty()
+    public IReadOnlyList<Property> GetProperties()
     {
         return _dbContext.Set<Property>().ToList();
     }
 
-    public Property? GetPropertyForId( Guid id )
+    public Property? GetById( Guid id )
     {
         return _dbContext.Set<Property>().Find( id );
     }
@@ -37,7 +37,7 @@ public class EFPropertyRepository : IPropertyRepository
 
     public void Delete( Guid id )
     {
-        Property? existingProperty = GetPropertyForId( id );
+        Property? existingProperty = GetById( id );
         if ( existingProperty == null )
         {
             throw new NotFoundException( $"Property с {id} ID не найден!" );

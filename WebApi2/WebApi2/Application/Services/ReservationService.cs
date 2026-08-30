@@ -27,9 +27,9 @@ public class ReservationService
         return _reservationRepository.GetFilteredReservations( propertyId, fromDate, toDate, guestName );
     }
 
-    public Reservation? GetReservationForId( Guid id )
+    public Reservation? GetById( Guid id )
     {
-        return _reservationRepository.GetReservationForId( id );
+        return _reservationRepository.GetById( id );
     }
 
     public Guid CreateReservation( CreateReservationDto reservationDto )
@@ -39,13 +39,13 @@ public class ReservationService
             throw new BadRequestException( "Дата выезда должна быть позже даты заезда!" );
         }
 
-        Property? property = _propertyRepository.GetPropertyForId( reservationDto.PropertyId );
+        Property? property = _propertyRepository.GetById( reservationDto.PropertyId );
         if ( property == null )
         {
             throw new NotFoundException( $"Property c {reservationDto.PropertyId} ID не найден!" );
         }
 
-        RoomType? roomType = _roomTypeRepository.GetRoomTypeForId( reservationDto.RoomTypeId );
+        RoomType? roomType = _roomTypeRepository.GetById( reservationDto.RoomTypeId );
         if ( roomType == null )
         {
             throw new NotFoundException( $"RoomType c {reservationDto.RoomTypeId} ID не найдена!" );
@@ -92,7 +92,7 @@ public class ReservationService
 
     public void CancelReservation( Guid id )
     {
-        Reservation? reservation = _reservationRepository.GetReservationForId( id );
+        Reservation? reservation = _reservationRepository.GetById( id );
         if ( reservation == null )
         {
             throw new NotFoundException( "Бронирование не найдено!" );

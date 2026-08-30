@@ -35,7 +35,7 @@ public class RoomTypesController : ControllerBase
     [HttpGet( "{id:guid}" )]
     public IActionResult GetRoomType( [FromRoute] Guid id )
     {
-        RoomType? roomType = _roomTypeService.GetRoomTypeForId( id );
+        RoomType? roomType = _roomTypeService.GetById( id );
         if ( roomType == null )
         {
             return NotFound();

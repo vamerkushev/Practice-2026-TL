@@ -23,9 +23,9 @@ public class RoomTypeService
         return _roomTypeRepository.GetByPropertyId( propertyId );
     }
 
-    public RoomType? GetRoomTypeForId( Guid id )
+    public RoomType? GetById( Guid id )
     {
-        return _roomTypeRepository.GetRoomTypeForId( id );
+        return _roomTypeRepository.GetById( id );
     }
 
     public Guid CreateRoomType( Guid propertyId, CreateRoomTypeDto roomTypeDto )
@@ -35,7 +35,7 @@ public class RoomTypeService
             throw new BadRequestException( "Минимальное количество гостей не должно быть больше максимального!" );
         }
 
-        if ( _propertyRepository.GetPropertyForId( propertyId ) == null )
+        if ( _propertyRepository.GetById( propertyId ) == null )
         {
             throw new NotFoundException( $"Property с {propertyId} ID  не найдена!" );
         }
@@ -64,7 +64,7 @@ public class RoomTypeService
             throw new BadRequestException( "Минимальное количество гостей не должно быть больше максимального!" );
         }
 
-        RoomType? roomType = _roomTypeRepository.GetRoomTypeForId( id );
+        RoomType? roomType = _roomTypeRepository.GetById( id );
         if ( roomType == null )
         {
             throw new NotFoundException( $"RoomType c {id} ID не найден!" );

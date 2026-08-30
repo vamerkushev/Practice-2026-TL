@@ -14,12 +14,7 @@ public class EFReservationRepository : IReservationRepository
         _dbContext = dbContext;
     }
 
-    public IReadOnlyList<Reservation> GetReservations()
-    {
-        return _dbContext.Set<Reservation>().ToList();
-    }
-
-    public Reservation? GetReservationForId( Guid id )
+    public Reservation? GetById( Guid id )
     {
         return _dbContext.Set<Reservation>().Find( id );
     }
@@ -33,18 +28,6 @@ public class EFReservationRepository : IReservationRepository
     public void Update( Reservation reservation )
     {
         _dbContext.Set<Reservation>().Update( reservation );
-        _dbContext.SaveChanges();
-    }
-
-    public void Delete( Guid id )
-    {
-        Reservation? existingReservation = GetReservationForId( id );
-        if ( existingReservation == null )
-        {
-            throw new NotFoundException( $"Reservation с {id} ID не найден!" );
-        }
-
-        _dbContext.Set<Reservation>().Remove( existingReservation );
         _dbContext.SaveChanges();
     }
 
@@ -85,7 +68,13 @@ public class EFReservationRepository : IReservationRepository
 
     public bool HasReservations( Guid roomTypeId )
     {
-        return _dbContext.Set<Reservation>().Any( r => r.RoomTypeId == roomTypeId && !r.IsCancelled );
+        DateTime now = DateTime.Now;
+        DateOnly currentDay = DateOnly.FromDateTime( now );
+        TimeOnly currentTime = TimeOnly.FromDateTime( now );
+
+        return _dbContext.Set<Reservation>().Any(
+            r => r.RoomTypeId == roomTypeId && !r.IsCancelled &&
+            ( r.DepartureDate > currentDay || ( r.DepartureDate == currentDay && r.DepartureTime > currentTime ) ) );
     }
 
     public IReadOnlyList<RoomTypeSearch> SearchAvailableOptions( string? city, DateOnly arrivalDate, DateOnly departureDate, int guests, decimal? maxPrice )
@@ -117,10 +106,16 @@ public class EFReservationRepository : IReservationRepository
                 RoomTypeName = s.rt.Name,
                 DailyPrice = s.rt.DailyPrice,
                 Currency = s.rt.Currency,
-                TotalForStay = s.rt.DailyPrice * nights,
                 AvailableRooms = s.rt.AvailableRoomsCount - s.overlaps
             } );
 
-        return query.ToList();
+        IReadOnlyList<RoomTypeSearch> result = query.ToList();
+
+        foreach ( RoomTypeSearch roomType in result )
+        {
+            roomType.CalculateTotalForStay( nights );
+        }
+
+        return result;
     }
 }
