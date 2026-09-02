@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Fighters.Tests/Fighters.Tests.csproj" Id="99523dbb-10ca-4cf9-9e8e-55a048abd55c" />
+  <Project Path="Fighters/Fighters.csproj" />
+</Solution>
