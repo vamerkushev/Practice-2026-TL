@@ -1,0 +1,144 @@
+﻿using Fighters.Models.Armors;
+using Fighters.Models.Races;
+using Fighters.Models.Roles;
+using Fighters.Models.Weapons;
+using Fighters.SystemConsole;
+
+namespace Fighters.Models.Fighters;
+
+public class FighterBuilder
+{
+    private static readonly List<IRace> _races = new()
+    {
+        new Human(), new Elf(), new Gnome(), new Goblin(), new Hobbit()
+    };
+
+    private static readonly List<IRole> _roles = new()
+    {
+        new Guardian(), new Healer(), new Knight(), new Ninja(), new Wizard()
+    };
+
+    private static readonly List<IWeapon> _weapons = new()
+    {
+        new Fists(), new Axe(), new Sword(), new Arbalest(), new Gun()
+    };
+
+    private static readonly List<IArmor> _armors = new()
+    {
+        new NoArmor(), new LeatherArmor(), new MetalArmor(), new GoldenArmor(), new DiamondArmor()
+    };
+
+    private string? _name;
+    private IRace? _race;
+    private IArmor? _armor;
+    private IWeapon? _weapon;
+    private IRole? _role;
+
+    private readonly ISystemConsole _console;
+
+    public FighterBuilder() : this( new SystemConsole.SystemConsole() ) { }
+
+    public FighterBuilder( ISystemConsole console )
+    {
+        _console = console ?? throw new ArgumentException( nameof( console ) );
+    }
+
+    public FighterBuilder AddName( string name )
+    {
+        if ( string.IsNullOrWhiteSpace( name ) )
+        {
+            throw new GameBattleException( "Имя не может быть пустым!" );
+        }
+        _name = name;
+        return this;
+    }
+
+    public FighterBuilder AddRace()
+    {
+        _race = Select( "Выберите расу: ", _races, race => race.GetType().Name );
+        return this;
+    }
+
+    public FighterBuilder AddArmor()
+    {
+        _armor = Select( "Выберите броню: ", _armors, armor => armor.GetType().Name );
+        return this;
+    }
+
+    public FighterBuilder AddWeapon()
+    {
+        _weapon = Select( "Выберите оружие: ", _weapons, weapon => weapon.GetType().Name );
+        return this;
+    }
+    public FighterBuilder AddRole()
+    {
+        _role = Select( "Выберите роль: ", _roles, role => role.GetType().Name );
+        return this;
+    }
+
+    public Fighter Build()
+    {
+        if ( string.IsNullOrEmpty( _name ) )
+        {
+            throw new GameBattleException( "Имя не задано." );
+        }
+        if ( _race == null || _role == null || _weapon == null || _armor == null )
+        {
+            throw new GameBattleException( "Не все компоненты выбраны." );
+        }
+        return new Fighter( _name, _race, _armor, _weapon, _role );
+    }
+
+    public FighterBuilder SetTestRace( IRace race )
+    {
+        _race = race;
+        return this;
+    }
+
+    public FighterBuilder SetTestRole( IRole role )
+    {
+        _role = role;
+        return this;
+    }
+
+    public FighterBuilder SetTestWeapon( IWeapon weapon )
+    {
+        _weapon = weapon;
+        return this;
+    }
+
+    public FighterBuilder SetTestArmor( IArmor armor )
+    {
+        _armor = armor;
+        return this;
+    }
+
+    private T Select<T>(
+        string title,
+        IReadOnlyList<T> items,
+        Func<T, string> nameItem )
+    {
+        while ( true )
+        {
+            _console.WriteLine( title );
+            for ( int i = 0; i < items.Count; i++ )
+            {
+                string postfix = ( i == 0 ) ? " (по умолчанию)" : "";
+                _console.WriteLine( $"{i + 1}. {nameItem( items[ i ] )}{postfix}" );
+            }
+
+            string input = Console.ReadLine() ?? string.Empty;
+            if ( string.IsNullOrEmpty( input ) )
+            {
+                return items[ 0 ];
+            }
+
+            if ( int.TryParse( input, out int choice ) && choice >= 1 && choice <= items.Count )
+            {
+                return items[ choice - 1 ];
+            }
+
+            _console.WriteLine( "Неверный ввод. Попробуйте снова." );
+        }
+    }
+}
