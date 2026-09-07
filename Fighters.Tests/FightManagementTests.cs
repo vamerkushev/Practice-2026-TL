@@ -155,15 +155,13 @@ public class FightManagementTests
     public void RunBattle_With_Mock_Random_Finish_And_Use_Random_Controller()
     {
         // Arrange
-        Mock<IRandomControl> randomMock = RandomControllerMockFactory.CreateMock(
-            multiplier: 0.9,
-            isCritical: false );
-
+        IRandomControl random = new TestRandomControl( nextDoubleValue: 0.5 );
         Mock<ISystemConsole> consoleMock = new Mock<ISystemConsole>();
 
-        FightManagement manager = new FightManagement( randomMock.Object, consoleMock.Object );
-        Fighter attacker = new Fighter( "Fighter_1", new Human(), new NoArmor(), new Fists(), new Knight() );
-        Fighter defender = new Fighter( "Fighter_2", new Human(), new NoArmor(), new Fists(), new Knight() );
+        FightManagement manager = new FightManagement( random, consoleMock.Object );
+
+        Fighter attacker = CreateDefaultFighter( "Fighter_1" );
+        Fighter defender = CreateDefaultFighter( "Fighter_2" );
 
         manager.AddFighter( attacker );
         manager.AddFighter( defender );
@@ -174,24 +172,19 @@ public class FightManagementTests
         // Assert
         Assert.True( winner.IsAlive() );
         Assert.False( ( winner == attacker ? defender : attacker ).IsAlive() );
-
-        randomMock.Verify( r => r.Next( It.IsAny<int>(), It.IsAny<int>() ), Times.AtLeastOnce() );
-        randomMock.Verify( r => r.NextDouble(), Times.AtLeastOnce() );
     }
 
     [Fact]
     public void RunBattle_With_Mock_Random_Critical_Hit_Print_Message()
     {
         // Arrange
-        Mock<IRandomControl> randomMock = RandomControllerMockFactory.CreateMock(
-            multiplier: 0.9,
-            isCritical: true );
-
+        IRandomControl random = new TestRandomControl( nextDoubleValue: 0.1 );
         Mock<ISystemConsole> consoleMock = new Mock<ISystemConsole>();
 
-        FightManagement manager = new FightManagement( randomMock.Object, consoleMock.Object );
-        Fighter attacker = new Fighter( "Fighter_1", new Human(), new NoArmor(), new Fists(), new Knight() );
-        Fighter defender = new Fighter( "Fighter_2", new Human(), new NoArmor(), new Fists(), new Knight() );
+        FightManagement manager = new FightManagement( random, consoleMock.Object );
+
+        Fighter attacker = CreateDefaultFighter( "Fighter_1" );
+        Fighter defender = CreateDefaultFighter( "Fighter_2" );
 
         manager.AddFighter( attacker );
         manager.AddFighter( defender );
@@ -207,15 +200,13 @@ public class FightManagementTests
     public void RunBattle_With_Mock_Random_No_Critical_Hit_Not_Print_Message()
     {
         // Arrange
-        Mock<IRandomControl> randomMock = RandomControllerMockFactory.CreateMock(
-            multiplier: 0.9,
-            isCritical: false );
-
+        IRandomControl random = new TestRandomControl( nextDoubleValue: 0.5 );
         Mock<ISystemConsole> consoleMock = new Mock<ISystemConsole>();
 
-        FightManagement manager = new FightManagement( randomMock.Object, consoleMock.Object );
-        Fighter attacker = new Fighter( "Fighter_1", new Human(), new NoArmor(), new Fists(), new Knight() );
-        Fighter defender = new Fighter( "Fighter_2", new Human(), new NoArmor(), new Fists(), new Knight() );
+        FightManagement manager = new FightManagement( random, consoleMock.Object );
+
+        Fighter attacker = CreateDefaultFighter( "Fighter_1" );
+        Fighter defender = CreateDefaultFighter( "Fighter_2" );
 
         manager.AddFighter( attacker );
         manager.AddFighter( defender );

@@ -3,11 +3,24 @@ using Fighters.Models.Fighters;
 using Fighters.Models.Races;
 using Fighters.Models.Roles;
 using Fighters.Models.Weapons;
+using Fighters.SystemConsole;
+using Moq;
 
 namespace Fighters.Tests.Models.Fighters;
 
 public class FighterBuilderTests
 {
+    private static Mock<ISystemConsole> CreateConsoleMockWithInputs( params string[] inputs )
+    {
+        Mock<ISystemConsole> mock = new Mock<ISystemConsole>();
+        var sequence = mock.SetupSequence( c => c.ReadLine() );
+        foreach ( string input in inputs )
+        {
+            sequence = sequence.Returns( input );
+        }
+        return mock;
+    }
+
     [Fact]
     public void Constructor_Initialize_Builder_With_Default_Values()
     {
@@ -22,16 +35,18 @@ public class FighterBuilderTests
     public void AddName_Valid_Name_Set_Name_And_Return_Builder()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         string expectedName = "Slava";
 
         // Act
-        FighterBuilder result = builder.AddName( expectedName );
-        Fighter fighter = result
-            .SetTestRace( new Human() )
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() )
+        Fighter fighter = builder
+            .AddName( expectedName )
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor()
             .Build();
 
         // Assert
@@ -45,6 +60,7 @@ public class FighterBuilderTests
     public void AddName_Invalid_Name_Throw_GameBattleException( string? invalidName )
     {
         // Arrange
+        Mock<ISystemConsole> consoleMock = new Mock<ISystemConsole>();
         FighterBuilder builder = new FighterBuilder();
 
         // Act and Assert
@@ -60,15 +76,17 @@ public class FighterBuilderTests
     public void AddRace_Valid_Number_Select_Correct_Race( string input, Type expectedRaceType )
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { input, "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         builder.AddName( "Slava" );
 
         // Act
-        FighterBuilder result = RedefiningInputStream( input + "\n", () => builder.AddRace() );
-        Fighter fighter = result
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() )
+        Fighter fighter = builder
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor()
             .Build();
 
         // Assert
@@ -79,15 +97,17 @@ public class FighterBuilderTests
     public void AddRace_Empty_Input_Select_Default_Race()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         builder.AddName( "Slava" );
 
         // Act
-        FighterBuilder result = RedefiningInputStream( "\n", () => builder.AddRace() );
-        Fighter fighter = result
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() )
+        Fighter fighter = builder
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor()
             .Build();
 
         // Assert
@@ -98,15 +118,17 @@ public class FighterBuilderTests
     public void AddRace_Invalid_Input_Retry_And_Then_Select_Default()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "0", "", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         builder.AddName( "Slava" );
 
         // Act
-        FighterBuilder result = RedefiningInputStream( "0\n\n", () => builder.AddRace() );
-        Fighter fighter = result
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() )
+        Fighter fighter = builder
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor()
             .Build();
 
         // Assert
@@ -125,15 +147,17 @@ public class FighterBuilderTests
     public void AddRole_Valid_Number_Select_Correct_Role( string input, Type expectedRoleType )
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", input, "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         builder.AddName( "Slava" );
 
         // Act
-        FighterBuilder result = RedefiningInputStream( input + "\n", () => builder.AddRole() );
-        Fighter fighter = result
-            .SetTestRace( new Human() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() )
+        Fighter fighter = builder
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor()
             .Build();
 
         // Assert
@@ -149,15 +173,17 @@ public class FighterBuilderTests
     public void AddWeapon_Valid_Number_Select_Correct_Weapon( string input, Type expectedWeaponType )
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", input, "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         builder.AddName( "Slava" );
 
         // Act
-        FighterBuilder result = RedefiningInputStream( input + "\n", () => builder.AddWeapon() );
-        Fighter fighter = result
-            .SetTestRace( new Human() )
-            .SetTestRole( new Knight() )
-            .SetTestArmor( new NoArmor() )
+        Fighter fighter = builder
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor()
             .Build();
 
         // Assert
@@ -173,15 +199,17 @@ public class FighterBuilderTests
     public void AddArmor_Valid_Number_Select_Correct_Armor( string input, Type expectedArmorType )
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", "1", input };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         builder.AddName( "Slava" );
 
         // Act
-        FighterBuilder result = RedefiningInputStream( input + "\n", () => builder.AddArmor() );
-        Fighter fighter = result
-            .SetTestRace( new Human() )
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() )
+        Fighter fighter = builder
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor()
             .Build();
 
         // Assert
@@ -192,12 +220,14 @@ public class FighterBuilderTests
     public void Build_Name_Missing_Throw_GameBattleException()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
         builder
-            .SetTestRace( new Human() )
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() );
+            .AddRace()
+            .AddRole()
+            .AddWeapon()
+            .AddArmor();
 
         // Act and Assert
         Assert.Throws<GameBattleException>( () => builder.Build() );
@@ -207,12 +237,14 @@ public class FighterBuilderTests
     public void Build_Race_Missing_Throw_GameBattleException()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
+        builder.AddName( "Slava" );
         builder
-            .AddName( "Slava" )
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() );
+            .AddRole()
+            .AddWeapon()
+            .AddArmor();
 
         // Act and Assert
         Assert.Throws<GameBattleException>( () => builder.Build() );
@@ -222,12 +254,14 @@ public class FighterBuilderTests
     public void Build_Role_Missing_Throw_GameBattleException()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
+        builder.AddName( "Slava" );
         builder
-            .AddName( "Slava" )
-            .SetTestRace( new Human() )
-            .SetTestWeapon( new Fists() )
-            .SetTestArmor( new NoArmor() );
+            .AddRace()
+            .AddWeapon()
+            .AddArmor();
 
         // Act and Assert
         Assert.Throws<GameBattleException>( () => builder.Build() );
@@ -237,12 +271,14 @@ public class FighterBuilderTests
     public void Build_Weapon_Missing_Throw_GameBattleException()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
+        builder.AddName( "Slava" );
         builder
-            .AddName( "Slava" )
-            .SetTestRace( new Human() )
-            .SetTestRole( new Knight() )
-            .SetTestArmor( new NoArmor() );
+            .AddRace()
+            .AddRole()
+            .AddArmor();
 
         // Act and Assert
         Assert.Throws<GameBattleException>( () => builder.Build() );
@@ -252,28 +288,16 @@ public class FighterBuilderTests
     public void Build_Armor_Missing_Throw_GameBattleException()
     {
         // Arrange
-        FighterBuilder builder = new FighterBuilder();
+        string[] inputs = { "1", "1", "1", "1" };
+        Mock<ISystemConsole> consoleMock = CreateConsoleMockWithInputs( inputs );
+        FighterBuilder builder = new FighterBuilder( consoleMock.Object );
+        builder.AddName( "Slava" );
         builder
-            .AddName( "Slava" )
-            .SetTestRace( new Human() )
-            .SetTestRole( new Knight() )
-            .SetTestWeapon( new Fists() );
+            .AddRace()
+            .AddRole()
+            .AddWeapon();
 
         // Act and Assert
         Assert.Throws<GameBattleException>( () => builder.Build() );
-    }
-
-    private static T RedefiningInputStream<T>( string input, Func<T> action )
-    {
-        System.IO.TextReader nitialInput = System.Console.In;
-        try
-        {
-            System.Console.SetIn( new System.IO.StringReader( input ) );
-            return action();
-        }
-        finally
-        {
-            System.Console.SetIn( nitialInput );
-        }
     }
 }

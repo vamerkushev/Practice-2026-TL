@@ -3,4 +3,5 @@
 public interface ISystemConsole
 {
     void WriteLine( string message );
+    string? ReadLine();
 }
