@@ -2,6 +2,7 @@
 using Fighters.Models.Races;
 using Fighters.Models.Roles;
 using Fighters.Models.Weapons;
+using Fighters.SystemConsole;
 
 namespace Fighters.Models.Fighters;
 
@@ -33,9 +34,18 @@ public class FighterBuilder
     private IWeapon? _weapon;
     private IRole? _role;
 
+    private readonly ISystemConsole _console;
+
+    public FighterBuilder() : this( new SystemConsole.SystemConsole() ) { }
+
+    public FighterBuilder( ISystemConsole console )
+    {
+        _console = console ?? throw new ArgumentException( nameof( console ) );
+    }
+
     public FighterBuilder AddName( string name )
     {
-        if ( string.IsNullOrEmpty( name ) )
+        if ( string.IsNullOrWhiteSpace( name ) )
         {
             throw new GameBattleException( "Имя не может быть пустым!" );
         }
@@ -79,21 +89,21 @@ public class FighterBuilder
         return new Fighter( _name, _race, _armor, _weapon, _role );
     }
 
-    private static T Select<T>(
+    private T Select<T>(
         string title,
         IReadOnlyList<T> items,
         Func<T, string> nameItem )
     {
         while ( true )
         {
-            Console.WriteLine( title );
+            _console.WriteLine( title );
             for ( int i = 0; i < items.Count; i++ )
             {
                 string postfix = ( i == 0 ) ? " (по умолчанию)" : "";
-                Console.WriteLine( $"{i + 1}. {nameItem( items[ i ] )}{postfix}" );
+                _console.WriteLine( $"{i + 1}. {nameItem( items[ i ] )}{postfix}" );
             }
 
-            string input = Console.ReadLine() ?? string.Empty;
+            string input = _console.ReadLine() ?? string.Empty;
             if ( string.IsNullOrEmpty( input ) )
             {
                 return items[ 0 ];
@@ -104,7 +114,7 @@ public class FighterBuilder
                 return items[ choice - 1 ];
             }
 
-            Console.WriteLine( "Неверный ввод. Попробуйте снова." );
+            _console.WriteLine( "Неверный ввод. Попробуйте снова." );
         }
     }
 }

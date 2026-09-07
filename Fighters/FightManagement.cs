@@ -1,4 +1,6 @@
 ﻿using Fighters.Models.Fighters;
+using Fighters.RandomController;
+using Fighters.SystemConsole;
 
 namespace Fighters;
 
@@ -10,7 +12,16 @@ public class FightManagement
     private const double MaxSpreadRandom = 0.3;
 
     private readonly List<Fighter> _fighters = [];
-    private readonly Random _random = new();
+    private readonly IRandomControl _random;
+    private readonly ISystemConsole _console;
+
+    public FightManagement() : this( new RandomControl(), new SystemConsole.SystemConsole() ) { }
+
+    public FightManagement( IRandomControl randomController, ISystemConsole console )
+    {
+        _random = randomController ?? throw new ArgumentException( nameof( randomController ) );
+        _console = console ?? throw new ArgumentException( nameof( console ) );
+    }
 
     public Fighter RunBattle()
     {
@@ -25,7 +36,7 @@ public class FightManagement
 
         while ( alive.Count > 1 )
         {
-            Console.WriteLine( $"Раунд {round}:" );
+            _console.WriteLine( $"Раунд {round}:" );
             DefineInitiative( alive );
 
             CalculateResultRound( alive );
@@ -34,7 +45,7 @@ public class FightManagement
             round++;
         }
         Fighter winner = alive[ 0 ];
-        Console.WriteLine( $"Боец {winner.Name} победил!" );
+        _console.WriteLine( $"Боец {winner.Name} победил!" );
         return winner;
     }
 
@@ -98,7 +109,7 @@ public class FightManagement
             }
         }
 
-        return defenders.Count == 0 ? null : defenders[ _random.Next( defenders.Count ) ];
+        return defenders.Count == 0 ? null : defenders[ _random.Next( 0, defenders.Count ) ];
     }
 
     private int CalculateTotalDamage( Fighter attacker, Fighter defender )
@@ -112,7 +123,7 @@ public class FightManagement
         if ( _random.NextDouble() <= ChanceCriticalHit )
         {
             totalDamage = totalDamage * MultiplicatorCriticalHit;
-            Console.WriteLine( $"Боец {attacker.Name} нанёс КРИТИЧЕСКИЙ УДАР!" );
+            _console.WriteLine( $"Боец {attacker.Name} нанёс КРИТИЧЕСКИЙ УДАР!" );
         }
 
         if ( totalDamage == 0 )
@@ -126,11 +137,11 @@ public class FightManagement
     private void ApplyDamage( Fighter attacker, Fighter defender, int totalDamage )
     {
         defender.TakeDamage( totalDamage );
-        Console.WriteLine( $"Боец {attacker.Name} нанёс {totalDamage} урона бойцу {defender.Name}. У него осталось {defender.GetCurrentHealth()} HP" );
+        _console.WriteLine( $"Боец {attacker.Name} нанёс {totalDamage} урона бойцу {defender.Name}. У него осталось {defender.GetCurrentHealth()} HP" );
 
         if ( !defender.IsAlive() )
         {
-            Console.WriteLine( $"Боец {defender.Name} погиб!" );
+            _console.WriteLine( $"Боец {defender.Name} погиб!" );
         }
     }
 

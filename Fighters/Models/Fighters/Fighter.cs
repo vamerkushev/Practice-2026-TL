@@ -38,6 +38,11 @@ public class Fighter : IFighter
 
     public void TakeDamage( int damage )
     {
+        if ( damage < 0 )
+        {
+            throw new GameBattleException( "Урон не может быть отрицательным!" );
+        }
+
         int newHealth = _currentHealth - damage;
         if ( newHealth < 0 )
         {
@@ -57,4 +62,9 @@ public class Fighter : IFighter
     {
         return _currentHealth > 0;
     }
+
+    public IRace Race => _race;
+    public IRole Role => _role;
+    public IWeapon Weapon => _weapon;
+    public IArmor Armor => _armor;
 }
